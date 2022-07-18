@@ -11,8 +11,14 @@ Imagine having to update the predicate (run config) for a playlist each and ever
 ## How do I use it? Simply name & run!
 - Set environment variables for API Keys :)
 - Name a playlist according to a holiday (i.e. Independance Day)
-- Name a playlist for a range including two holidays (i.e. RANGE|Memorial Day|Labor Day)
+- Name a playlist for a range including two holidays (i.e. Summer|Memorial Day|Labor Day|RANGE)
 - Run!
+
+## Range examples
+- {Title}|{Start Holiday}|{End Holiday}|RANGE
+- Summer|Memorial Day|Labor Day|RANGE
+- Advent|First Sunday of Advent|Christmas Eve|RANGE
+- Fall|Halloween|Thanksgiving Day|RANGE
 
 ## License
 
