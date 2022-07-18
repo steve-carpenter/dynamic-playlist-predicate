@@ -60,7 +60,7 @@ def update_playlist(playlist: dict, predicate: str):
 
 def process_playlists(playlists: list, holidays: dict):
     for playlist in playlists:
-            if 'RANGE' in playlist['title']: # Pattern RANGE|{FIRST_EVENT}|{SECOND_EVENT}
+            if 'RANGE' in playlist['title']: # Pattern {TITLE}|{FIRST_EVENT}|{SECOND_EVENT}|RANGE
                 clean_title = playlist['title'].split('|')
                 start_date = holidays.get(clean_title[1])
                 end_date = holidays.get(clean_title[2])
