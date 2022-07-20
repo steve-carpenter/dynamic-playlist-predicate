@@ -15,10 +15,11 @@ Imagine having to update the predicate (run config) for a playlist each and ever
 - Run!
 
 ## Range examples
-- {Title}|{Start Holiday}|{End Holiday}|RANGE
-- Summer|Memorial Day|Labor Day|RANGE
-- Advent|First Sunday of Advent|Christmas Eve|RANGE
-- Fall|Halloween|Thanksgiving Day|RANGE
+- {Title}|{Start Holiday}|{End Holiday}
+- Summer|Memorial Day|Labor Day
+- Before Christmas|90|Christmas Day (results in 90 days before Christmas Day)
+- After Christmas|Christmas Day|90 (results in 90 days after Christmas Day)
+- Random|Memorial Day+8|Christmas Day+1 (results in 8 days after Memorial Day and 1 day after Christmas Day)
 
 ## License
 
