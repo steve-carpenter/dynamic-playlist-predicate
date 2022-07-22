@@ -9,7 +9,7 @@ START_HOLIDAY = 1
 END_HOLIDAY = 2
 START_HOLIDAY_OFFSET = 3
 END_HOLIDAY_OFFSET = 4
-RANGE_PATTERN = "^([\w\s\d]+)\|(?:(\d+)|(?:([A-Za-z\s]+)(?:(?:\+)([\d]+))*))\|(?:(\d+)|(?:([A-Za-z\s]+)(?:(?:\+)([\d]+))*))$"
+RANGE_PATTERN = "^([\w\s\d]+)\|(?:(\d+)|(?:(['A-Za-z\s]+)(?:(?:\+)([\d]+))*))\|(?:(\d+)|(?:(['A-Za-z\s]+)(?:(?:\+)([\d]+))*))$"
 PATTERN = re.compile(RANGE_PATTERN)
 
 
