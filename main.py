@@ -37,21 +37,12 @@ def get_screenly_playlists() -> dict:
     )
     return response.json() if response.ok else {}
 
-
-def get_screenly_playlist(id: str) -> dict:
-    response = requests.request(
-        method='GET',
-        url=f'https://api.screenlyapp.com/api/v3/playlists/{id}/',
-        headers=get_screenly_headers()
-    )
-
-
-def get_holidays():
+def get_holidays(country: str = "US", year: int = get_current_year()):
     response = requests.request(
         method='GET',
         url='https://calendarific.com/api/v2/holidays?',
         params={"api_key": get_holiday_headers(
-        )['API_KEY'], "country": "US", "year": get_current_year()}
+        )['API_KEY'], "country": country, "year": year}
     )
     return {holiday['name']: holiday['date']['iso']
             for holiday in response.json()['response']['holidays']
@@ -59,7 +50,6 @@ def get_holidays():
 
 
 def iso_to_ms(date: str, delta: int = 0) -> int:
-    print(date)
     date_obj = datetime.fromisoformat(date).replace(tzinfo=timezone.utc)
     date_obj += timedelta(days=delta)
     return int(date_obj.timestamp() * 1000)
@@ -71,15 +61,18 @@ def create_date(date: str, delta: int = 0) -> int:
     return date_obj.isoformat()
 
 
-def update_playlist(playlist: dict, predicate: str):
+def update_playlist(playlist: dict, new_predicate: str):
     if playlist.get('id'):
-        response = requests.request(
-            method='PATCH',
-            url=f'https://api.screenlyapp.com/api/v3/playlists/{playlist.get("id")}/',
-            json={'predicate': predicate},
-            headers=get_screenly_headers()
-        )
-        print(f'{playlist.get("title")} updated' if response.ok else "")
+        if new_predicate and playlist['predicate'] != new_predicate:
+            response = requests.request(
+                method='PATCH',
+                url=f'https://api.screenlyapp.com/api/v3/playlists/{playlist.get("id")}/',
+                json={'predicate': new_predicate},
+                headers=get_screenly_headers()
+            )
+            print(f'{playlist.get("title")} updated' if response.ok else "")
+        else:
+            print(f"{playlist['title']} not updated because predicate didn't change")
 
 
 def regex_to_values(playlist_title, holidays):
@@ -94,11 +87,12 @@ def regex_to_values(playlist_title, holidays):
 
 
 def process_playlists(playlists: list, holidays: dict):
+    print(f"Comparing {len(playlists)} playlists & {len(holidays)} holidays...")
     for playlist in playlists:
         if playlist['is_enabled'] == False:
+            print(f"{playlist['title']} skipped because it's disabled")
             continue
         elif '|' in playlist['title']:
-            print(playlist)
             final_start_date = final_end_date = None
             start_offset, start_date, start_date_delta, end_offset, end_date, end_date_delta = regex_to_values(
                 playlist['title'], holidays)
@@ -123,13 +117,13 @@ def process_playlists(playlists: list, holidays: dict):
 
             # Grab & update groups from regex
             if final_start_date and final_end_date:
-                update_playlist(
-                    playlist, f'TRUE AND ($DATE >= {iso_to_ms(final_start_date)}) AND ($DATE <= {iso_to_ms(final_end_date)})')
+                update_playlist(playlist, f'TRUE AND ($DATE >= {iso_to_ms(final_start_date)}) AND ($DATE <= {iso_to_ms(final_end_date)})')
         else:
             holiday = holidays.get(playlist['title'])
             if holiday:
-                update_playlist(
-                    playlist, f'TRUE AND ($DATE = {iso_to_ms(holiday)})')
+                update_playlist(playlist,  f'TRUE AND ($DATE = {iso_to_ms(holiday)})')
+            else:
+                print(f"{playlist['title']} skipped because it's not a holiday")
 
 
 def main():

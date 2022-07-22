@@ -20,6 +20,7 @@ Imagine having to update the predicate (run config) for a playlist each and ever
 - Before Christmas|90|Christmas Day (results in 90 days before Christmas Day)
 - After Christmas|Christmas Day|90 (results in 90 days after Christmas Day)
 - Random|Memorial Day+8|Christmas Day+1 (results in 8 days after Memorial Day and 1 day after Christmas Day)
+- Week Before and After Christmas|7|Christmas Day+7 (week before and after Christmas Day)
 
 ## License
 
