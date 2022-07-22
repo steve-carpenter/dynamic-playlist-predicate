@@ -59,6 +59,7 @@ def get_holidays():
 
 
 def iso_to_ms(date: str, delta: int = 0) -> int:
+    print(date)
     date_obj = datetime.fromisoformat(date).replace(tzinfo=timezone.utc)
     date_obj += timedelta(days=delta)
     return int(date_obj.timestamp() * 1000)
@@ -94,25 +95,36 @@ def regex_to_values(playlist_title, holidays):
 
 def process_playlists(playlists: list, holidays: dict):
     for playlist in playlists:
-        if '|' in playlist['title']:
+        if playlist['is_enabled'] == False:
+            continue
+        elif '|' in playlist['title']:
+            print(playlist)
+            final_start_date = final_end_date = None
             start_offset, start_date, start_date_delta, end_offset, end_date, end_date_delta = regex_to_values(
                 playlist['title'], holidays)
             # Grab & update groups from regex
-            if (start_date_delta and start_date) and (end_date_delta and end_date):
-                start_date = create_date(start_date, int(start_date_delta))
-                end_date = create_date(end_date, int(end_date_delta))
+            if not start_date and not end_date:
+                print("Invalid expression; need a date to reference")
+                continue
+
+            if start_date and start_date_delta:
+                final_start_date = create_date(start_date, int(start_date_delta))
             elif start_offset and end_date:
-                start_date = create_date(end_date, -int(start_offset))
+                final_start_date = create_date(end_date, -int(start_offset))
+            elif start_date:
+                final_start_date = start_date
+
+            if end_date and end_date_delta:
+                final_end_date = create_date(end_date, int(end_date_delta))
             elif end_offset and start_date:
-                end_date = create_date(start_date, int(end_offset))
-            elif start_date and start_date_delta:
-                start_date = create_date(start_date, int(start_date_delta))
-            elif end_date and end_date_delta:
-                end_date = create_date(end_date, int(end_date_delta))
+                final_end_date = create_date(start_date, int(end_offset))
+            elif end_date:
+                final_end_date = end_date
+
             # Grab & update groups from regex
-            if start_date and end_date:
+            if final_start_date and final_end_date:
                 update_playlist(
-                    playlist, f'TRUE AND ($DATE >= {iso_to_ms(start_date)}) AND ($DATE <= {iso_to_ms(end_date)})')
+                    playlist, f'TRUE AND ($DATE >= {iso_to_ms(final_start_date)}) AND ($DATE <= {iso_to_ms(final_end_date)})')
         else:
             holiday = holidays.get(playlist['title'])
             if holiday:
